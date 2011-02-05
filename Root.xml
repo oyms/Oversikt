@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Artifact Id="oversikt_root" Created="2011-02-05T23:11:00.0+01:00" xmlns="http://schemas.skaar/oversikt" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.skaar/oversikt Artifact.xsd">
+	<Title>Oversikt task management</Title>
+	<Description>
+		<bold>This is a bold header</bold>
+	</Description>
+	<Type>Project</Type>
+</Artifact>

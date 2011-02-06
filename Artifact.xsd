@@ -25,6 +25,31 @@
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
+				<xs:sequence>
+					<xs:element name="Link" nillable="false" minOccurs="0" maxOccurs="unbounded">
+						<xs:complexType>
+							<xs:attribute name="Direction" use="optional" default="Out">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="In"/>
+										<xs:enumeration value="Out"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+							<xs:attribute name="Type">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:enumeration value="Child"/>
+										<xs:enumeration value="Parent"/>
+										<xs:enumeration value="Dependency"/>
+										<xs:enumeration value="Break-down"/>
+										<xs:enumeration value="Information"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:attribute>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
 			</xs:sequence>
 			<xs:attribute name="Id" use="required">
 				<xs:annotation>

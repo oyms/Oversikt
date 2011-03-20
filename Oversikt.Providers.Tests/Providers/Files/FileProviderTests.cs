@@ -33,7 +33,7 @@ namespace Oversikt.Tests.Providers.Files
         public void Get_ExistingFilePath_ReturnsStream()
         {
             config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey)).Returns(folderLocation.Object);
-            var target = new FileProvider(config.Object);
+            target = new FileProvider(config.Object);
             using (var file = new TempFileAdapter(Any.String))
             {
                 folderLocation.Setup(c => c.Path).Returns(file.FolderPath);
@@ -48,7 +48,7 @@ namespace Oversikt.Tests.Providers.Files
         public void Get_ExistingFilePath_ReturnsStreamWithSameContent()
         {
             config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey)).Returns(folderLocation.Object);
-            var target = new FileProvider(config.Object);
+            target = new FileProvider(config.Object);
             using (var file = new TempFileAdapter("abc"))
             {
                 folderLocation.Setup(c => c.Path).Returns(file.FolderPath);
@@ -57,6 +57,32 @@ namespace Oversikt.Tests.Providers.Files
                     string result = reader.ReadToEnd();
                     Assert.That(result, Is.EqualTo("abc"));
                 }
+            }
+        }
+
+        [Test]
+        public void Get_FolderMissing_Throws()
+        {
+            //Arrange
+            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey)).Returns(folderLocation.Object);
+            folderLocation.Setup(c => c.Path).Returns(Any.String);
+            target=new FileProvider(config.Object);
+            //Act
+            ActualValueDelegate targetAction = () => target.Get(Any.String);
+            //Assert
+            Assert.That(targetAction,Throws.TypeOf(typeof(DirectoryNotFoundException)));
+        }
+        [Test]
+        public void Get_FileMissing_Throws()
+        {
+            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey)).Returns(folderLocation.Object);
+            target = new FileProvider(config.Object);
+            using (var file = new TempFileAdapter(Any.String))
+            {
+                folderLocation.Setup(c => c.Path).Returns(file.FolderPath);
+
+                ActualValueDelegate targetAction = () => target.Get(Any.String);
+                Assert.That(targetAction, Throws.TypeOf(typeof(FileNotFoundException)));
             }
         }
     }

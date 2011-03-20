@@ -1,2 +1,5 @@
 *.userprefs
 build/
+_ReSharper.*
+*.ReSharper.user
+bin/

@@ -93,6 +93,7 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
+    <Compile Include="Configuration\ConfigurationScope.cs" />
     <Compile Include="Configuration\IConfigurationType.cs" />
     <Compile Include="Configuration\IFolderLocation.cs" />
     <Compile Include="IArtifact.cs" />

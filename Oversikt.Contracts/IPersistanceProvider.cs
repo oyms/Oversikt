@@ -11,5 +11,7 @@ namespace Skaar.Oversikt.Contracts
         /// Fetches a stream from the peristent store based on the <paramref name="id"/>.
         /// </summary>
         Stream Get(string id);
+
+        
     }
 }

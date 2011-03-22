@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Moq;
 using NUnit.Framework;
@@ -12,6 +13,7 @@ namespace Oversikt.Tests.Providers.Files
         private Mock<IConfigurationProvider> config;
         private FileProvider target;
         private Mock<IFolderLocation> folderLocation;
+        private ConfigurationScope projectShared = ConfigurationScope.ProjectShared;
 
         [SetUp]
         public void SetUp()
@@ -32,7 +34,7 @@ namespace Oversikt.Tests.Providers.Files
         [Test]
         public void Get_ExistingFilePath_ReturnsStream()
         {
-            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey)).Returns(folderLocation.Object);
+            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey,projectShared)).Returns(folderLocation.Object);
             target = new FileProvider(config.Object);
             using (var file = new TempFileAdapter(Any.String))
             {
@@ -47,7 +49,7 @@ namespace Oversikt.Tests.Providers.Files
         [Test]
         public void Get_ExistingFilePath_ReturnsStreamWithSameContent()
         {
-            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey)).Returns(folderLocation.Object);
+            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey,projectShared)).Returns(folderLocation.Object);
             target = new FileProvider(config.Object);
             using (var file = new TempFileAdapter("abc"))
             {
@@ -64,7 +66,7 @@ namespace Oversikt.Tests.Providers.Files
         public void Get_FolderMissing_Throws()
         {
             //Arrange
-            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey)).Returns(folderLocation.Object);
+            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey,projectShared)).Returns(folderLocation.Object);
             folderLocation.Setup(c => c.Path).Returns(Any.String);
             target=new FileProvider(config.Object);
             //Act
@@ -75,15 +77,33 @@ namespace Oversikt.Tests.Providers.Files
         [Test]
         public void Get_FileMissing_Throws()
         {
-            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey)).Returns(folderLocation.Object);
+            config.Setup(c => c.Get<IFolderLocation>(FileProvider.FolderLocationConfigurationKey,projectShared)).Returns(folderLocation.Object);
             target = new FileProvider(config.Object);
             using (var file = new TempFileAdapter(Any.String))
             {
                 folderLocation.Setup(c => c.Path).Returns(file.FolderPath);
 
                 ActualValueDelegate targetAction = () => target.Get(Any.String);
-                Assert.That(targetAction, Throws.TypeOf(typeof(FileNotFoundException)));
+                Assert.That(targetAction, Throws.TypeOf<FileNotFoundException>());
             }
+        }
+
+        [Test]
+        public void Get_IdNull_Throws()
+        {
+            Assert.That(()=>target.Get(null),Throws.TypeOf<ArgumentNullException>());
+        }
+
+        [Test]
+        public void Get_IdWhiteSpace_Throws()
+        {
+            Assert.That(() => target.Get(" "), Throws.TypeOf<ArgumentNullException>());
+        }
+
+        [Test]
+        public void Get_IdEmpty_Throws()
+        {
+            Assert.That(() => target.Get(string.Empty), Throws.TypeOf<ArgumentNullException>());
         }
     }
 }

@@ -9,16 +9,27 @@ namespace Oversikt.Providers.Files
     /// <summary>
     /// Provides loading and saving of file streams
     /// </summary>
-    public class FileProvider:IPersistanceProvider
+    public class FileProvider : IPersistanceProvider
     {
         public const string FolderLocationConfigurationKey = "Oversikt.FileProvider.EntityFileLocation";
         private readonly IConfigurationProvider configuration;
 
         public FileProvider(IConfigurationProvider configuration)
         {
-            Contract.Requires(configuration!=null);
+            Contract.Requires(configuration != null);
             this.configuration = configuration;
         }
+
+        private IFolderLocation Folder
+        {
+            get
+            {
+                return configuration.Get<IFolderLocation>(FolderLocationConfigurationKey,
+                                                          ConfigurationScope.ProjectShared);
+            }
+        }
+
+        #region IPersistanceProvider Members
 
         /// <summary>
         /// Fetches a file with the specified [relative] path
@@ -28,9 +39,19 @@ namespace Oversikt.Providers.Files
         /// <exception cref="InvalidOperationException">Throws exception if no folder path configuration is defined.</exception>
         public Stream Get(string id)
         {
-            var folderLocation = configuration.Get<IFolderLocation>(FolderLocationConfigurationKey);
-            if(folderLocation==null)throw new InvalidOperationException("The file location configuration is not specified");
+            if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException("id");
+            IFolderLocation folderLocation = Folder;
+            if (folderLocation == null || string.IsNullOrWhiteSpace(folderLocation.Path))
+                throw new InvalidOperationException("The file location configuration is not specified");
             return File.OpenRead(Path.Combine(folderLocation.Path, id));
+        }
+
+        #endregion
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant()
+        {
+            Contract.Invariant(configuration != null);
         }
     }
 }

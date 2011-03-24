@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Moq;
 using NUnit.Framework;
@@ -118,5 +119,6 @@ namespace Oversikt.IntegrationTests.Providers.Files
                 Assert.That(folder.SubFolderExists("setupFolder\\"+FileProvider.AttachmentsFolderName));
             }
         }
+
     }
 }

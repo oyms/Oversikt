@@ -12,6 +12,6 @@ namespace Skaar.Oversikt.Contracts.Configuration
         /// <param name="key">The key the value is stored by</param>
         /// <param name="scope">The scope of the configuration</param>
         /// <returns>May retun <c>null</c> if no configuration exists.</returns>
-        T Get<T>(string key, ConfigurationScope scope) where T:IConfigurationType;
+        T Get<T>(string key, ConfigurationScope scope) where T:IConfigurationSetting;
     }
 }

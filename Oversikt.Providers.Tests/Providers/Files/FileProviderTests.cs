@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -44,5 +45,25 @@ namespace Oversikt.Tests.Providers.Files
             Assert.That(() => target.Get(string.Empty), Throws.TypeOf<ArgumentNullException>());
         }
 
+        [Test]
+        public void RequiresConfiguration_WhenCalled_ContainsFolderLocation()
+        {
+            var t = target as IConfigurationConsumer;
+            var configurations = t.RequiresConfiguration().ToArray();
+            var result = configurations.Where(c => c.Name == "Oversikt.FileProvider.EntityFileLocation" && c.Scope==ConfigurationScope.SharedProject).FirstOrDefault();
+            Assert.That(result,Is.Not.Null);
+        }
+
+        [Test]
+        public void Setup_PathIsEmpty_Throws()
+        {
+            Assert.That(() => target.SetupProject(string.Empty), Throws.TypeOf<ArgumentNullException>());
+        }
+
+        [Test]
+        public void Setup_PathIsWhiteSpace_Throws()
+        {
+            Assert.That(() => target.SetupProject(" \t"), Throws.TypeOf<ArgumentNullException>());
+        }
     }
 }

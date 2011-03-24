@@ -93,12 +93,15 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
+    <Compile Include="Configuration\ConfigurationType.cs" />
+    <Compile Include="Configuration\IConfigurationDefinition.cs" />
     <Compile Include="Configuration\ConfigurationScope.cs" />
-    <Compile Include="Configuration\IConfigurationType.cs" />
+    <Compile Include="Configuration\IConfigurationSetting.cs" />
     <Compile Include="Configuration\IFolderLocation.cs" />
     <Compile Include="IArtifact.cs" />
     <Compile Include="IArtifactLink.cs" />
     <Compile Include="Configuration\IConfigurationProvider.cs" />
+    <Compile Include="Configuration\IConfigurationConsumer.cs" />
     <Compile Include="IPersistanceProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using Skaar.Oversikt.Contracts;
@@ -9,7 +10,7 @@ namespace Oversikt.Providers.Files
     /// <summary>
     /// Provides loading and saving of file streams
     /// </summary>
-    public class FileProvider : IPersistanceProvider
+    public class FileProvider : IPersistanceProvider, IConfigurationConsumer
     {
         public const string FolderLocationConfigurationKey = "Oversikt.FileProvider.EntityFileLocation";
         public const string ArtifactsFolderName = "Artifacts";
@@ -62,13 +63,40 @@ namespace Oversikt.Providers.Files
         /// <param name="projectPath">The folder path. The folder will be created if it does not allready exist.</param>
         public void SetupProject(string projectPath)
         {
-            Contract.Requires(!string.IsNullOrEmpty(projectPath));
+            if (string.IsNullOrWhiteSpace(projectPath)) throw new ArgumentNullException("projectPath","Project path cannot be null or white space.");
             var baseFolder = Directory.Exists(projectPath)
                                  ? new DirectoryInfo(projectPath)
                                  : Directory.CreateDirectory(projectPath);
             baseFolder.CreateSubdirectory(ArtifactsFolderName);
             baseFolder.CreateSubdirectory(ConfigurationFolderName);
             baseFolder.CreateSubdirectory(AttachmentsFolderName);
+        }
+
+        IEnumerable<IConfigurationDefinition> IConfigurationConsumer.RequiresConfiguration()
+        {
+            yield return new FolderLocationDefinition();
+        }
+        private class FolderLocationDefinition:IConfigurationDefinition
+        {
+            public ConfigurationScope Scope
+            {
+                get { return ConfigurationScope.SharedProject; }
+            }
+
+            public ConfigurationType Type
+            {
+                get { return ConfigurationType.FolderPath; }
+            }
+
+            public string Name
+            {
+                get { return "Oversikt.FileProvider.EntityFileLocation"; }
+            }
+
+            public string Description
+            {
+                get { throw new NotImplementedException(); }
+            }
         }
     }
 }

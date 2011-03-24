@@ -12,6 +12,10 @@ namespace Skaar.Oversikt.Contracts
         /// </summary>
         Stream Get(string id);
 
-        
+        /// <summary>
+        /// Sets up the project persistance store
+        /// </summary>
+        /// <param name="projectPath">The path to the store. The format is dependent on the platform.</param>
+        void SetupProject(string projectPath);
     }
 }

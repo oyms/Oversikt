@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 
-namespace Oversikt.Tests.Providers.Files
+namespace Oversikt.IntegrationTests.Providers.Files
 {
     /// <summary>
     /// This class is used to create a temporary file.
@@ -11,12 +11,10 @@ namespace Oversikt.Tests.Providers.Files
     [DebuggerDisplay("{fileContent}")]
     class TempFileAdapter:IDisposable
     {
-        private readonly string fileContent;
         private readonly string tempPath;
 
         public TempFileAdapter(string fileContent)
         {
-            this.fileContent = fileContent;
             tempPath = Path.GetTempFileName();
             using (var writer = new StreamWriter(tempPath, false, Encoding.Default))
             {

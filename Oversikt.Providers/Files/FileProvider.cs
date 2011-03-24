@@ -12,6 +12,9 @@ namespace Oversikt.Providers.Files
     public class FileProvider : IPersistanceProvider
     {
         public const string FolderLocationConfigurationKey = "Oversikt.FileProvider.EntityFileLocation";
+        public const string ArtifactsFolderName = "Artifacts";
+        public const string ConfigurationFolderName = "Configuration";
+        public const string AttachmentsFolderName = "Attachments";
         private readonly IConfigurationProvider configuration;
 
         public FileProvider(IConfigurationProvider configuration)
@@ -51,6 +54,21 @@ namespace Oversikt.Providers.Files
         private void ObjectInvariant()
         {
             Contract.Invariant(configuration != null);
+        }
+
+        /// <summary>
+        /// Sets up the folders neccessary to store the project files
+        /// </summary>
+        /// <param name="projectPath">The folder path. The folder will be created if it does not allready exist.</param>
+        public void SetupProject(string projectPath)
+        {
+            Contract.Requires(!string.IsNullOrEmpty(projectPath));
+            var baseFolder = Directory.Exists(projectPath)
+                                 ? new DirectoryInfo(projectPath)
+                                 : Directory.CreateDirectory(projectPath);
+            baseFolder.CreateSubdirectory(ArtifactsFolderName);
+            baseFolder.CreateSubdirectory(ConfigurationFolderName);
+            baseFolder.CreateSubdirectory(AttachmentsFolderName);
         }
     }
 }

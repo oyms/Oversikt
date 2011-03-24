@@ -61,7 +61,6 @@
     <Compile Include="Configuration\ConfigurationScopeTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\Files\FileProviderTests.cs" />
-    <Compile Include="Providers\Files\TempFileAdapter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Moq">

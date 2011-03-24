@@ -24,8 +24,7 @@ namespace Oversikt.Providers.Files
         {
             get
             {
-                return configuration.Get<IFolderLocation>(FolderLocationConfigurationKey,
-                                                          ConfigurationScope.ProjectShared);
+                return configuration.Get<IFolderLocation>(FolderLocationConfigurationKey, ConfigurationScope.SharedProject);
             }
         }
 

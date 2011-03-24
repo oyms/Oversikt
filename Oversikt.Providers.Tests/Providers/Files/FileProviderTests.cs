@@ -13,7 +13,7 @@ namespace Oversikt.Tests.Providers.Files
         private Mock<IConfigurationProvider> config;
         private FileProvider target;
         private Mock<IFolderLocation> folderLocation;
-        private ConfigurationScope projectShared = ConfigurationScope.ProjectShared;
+        private readonly ConfigurationScope projectShared = ConfigurationScope.SharedProject;
 
         [SetUp]
         public void SetUp()

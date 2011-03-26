@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
 using Skaar.Oversikt.Contracts;
 using Skaar.Oversikt.Contracts.Configuration;
 
@@ -31,8 +32,42 @@ namespace Oversikt.Providers.Files
                 return configuration.Get<IFolderLocation>(FolderLocationConfigurationKey, ConfigurationScope.SharedProject);
             }
         }
-
+        private DirectoryInfo EnsureFolder(string folderName)
+        {
+            IFolderLocation folderLocation = Folder;
+            if (folderLocation == null || string.IsNullOrWhiteSpace(folderLocation.Path))
+                throw new InvalidOperationException("The file location configuration is not specified");
+            var folder = new DirectoryInfo(folderLocation.Path);
+            if (!folder.Exists) throw new DirectoryNotFoundException("Project folder was not found. Please verify configuration settings.");
+            var path = Path.Combine(folder.FullName, folderName);
+            var targetFolder = new DirectoryInfo(path);
+            if (!targetFolder.Exists) targetFolder = Directory.CreateDirectory(path);
+            return targetFolder;
+        }
+        private IEnumerable<IArtifactStream> GetAll(DirectoryInfo folder)
+        {
+            foreach (var info in folder.EnumerateFileSystemInfos())
+            {
+                if(info is DirectoryInfo)
+                {
+                    foreach (var file in GetAll(info as DirectoryInfo))
+                    {
+                        yield return file;
+                    }
+                }
+                else
+                {
+                    yield return new ArtifactStream(File.OpenRead(info.FullName), info.FullName);
+                }
+            }
+        }
         #region IPersistanceProvider Members
+
+        public IEnumerable<IArtifactStream> GetAll()
+        {
+            var artifactsFolder = EnsureFolder(ArtifactsFolderName);
+            return GetAll(artifactsFolder);
+        }
 
         /// <summary>
         /// Fetches a file with the specified [relative] path
@@ -43,10 +78,8 @@ namespace Oversikt.Providers.Files
         public Stream Get(string id)
         {
             if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException("id");
-            IFolderLocation folderLocation = Folder;
-            if (folderLocation == null || string.IsNullOrWhiteSpace(folderLocation.Path))
-                throw new InvalidOperationException("The file location configuration is not specified");
-            return File.OpenRead(Path.Combine(folderLocation.Path, id));
+            var folder = EnsureFolder(ArtifactsFolderName);
+            return File.OpenRead(Path.Combine(folder.FullName, id));
         }
 
         #endregion
@@ -76,6 +109,7 @@ namespace Oversikt.Providers.Files
         {
             yield return new FolderLocationDefinition();
         }
+
         private class FolderLocationDefinition:IConfigurationDefinition
         {
             public ConfigurationScope Scope

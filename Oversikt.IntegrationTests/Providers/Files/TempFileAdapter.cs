@@ -8,7 +8,7 @@ namespace Oversikt.IntegrationTests.Providers.Files
     /// <summary>
     /// This class is used to create a temporary file.
     /// </summary>
-    [DebuggerDisplay("{fileContent}")]
+    [DebuggerDisplay("{FileName}")]
     class TempFileAdapter:IDisposable
     {
         private readonly string tempPath;

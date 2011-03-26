@@ -63,6 +63,7 @@
     <AssemblyOriginatorKeyFile>..\Oversikt.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Files\ArtifactStream.cs" />
     <Compile Include="Files\FileProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -102,6 +102,7 @@
     <Compile Include="IArtifactLink.cs" />
     <Compile Include="Configuration\IConfigurationProvider.cs" />
     <Compile Include="Configuration\IConfigurationConsumer.cs" />
+    <Compile Include="IArtifactStream.cs" />
     <Compile Include="IPersistanceProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

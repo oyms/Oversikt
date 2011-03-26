@@ -1,5 +1,5 @@
-using System;
 using System.IO;
+using System.Linq;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -24,26 +24,33 @@ namespace Oversikt.IntegrationTests.Providers.Files
             target = new FileProvider(config.Object);
         }
 
+        private void SetupFolderPathConfig(string path)
+        {
+            folderLocation.Setup(c => c.Path).Returns(path);
+        }
+
         [Test]
         public void Get_ExistingFilePath_ReturnsStream()
         {
-            using (var file = new TempFileAdapter("a"))
+            using (var folder=new TempFolderAdapter(FileProvider.ArtifactsFolderName))
             {
-                folderLocation.Setup(c => c.Path).Returns(file.FolderPath);
-
-                using (var result = target.Get(file.FileName))
+                folder.AddFile("a", "b");
+                SetupFolderPathConfig(folder.BasePath);
+                using (var result = target.Get("a"))
                 {
                     Assert.That(result, Is.Not.Null);
                 }
             }
         }
+
         [Test]
         public void Get_ExistingFilePath_ReturnsStreamWithSameContent()
         {
-            using (var file = new TempFileAdapter("abc"))
+            using (var folder = new TempFolderAdapter(FileProvider.ArtifactsFolderName))
             {
-                folderLocation.Setup(c => c.Path).Returns(file.FolderPath);
-                using (var reader = new StreamReader(target.Get(file.FileName)))
+                folder.AddFile("a", "abc");
+                SetupFolderPathConfig(folder.BasePath);
+                using (var reader = new StreamReader(target.Get("a")))
                 {
                     string result = reader.ReadToEnd();
                     Assert.That(result, Is.EqualTo("abc"));
@@ -56,7 +63,7 @@ namespace Oversikt.IntegrationTests.Providers.Files
         {
             //Arrange
             target=new FileProvider(config.Object);
-            folderLocation.Setup(f => f.Path).Returns("abc");
+            SetupFolderPathConfig("abc");
             //Act
             ActualValueDelegate targetAction = () => target.Get("a");
             //Assert
@@ -65,9 +72,9 @@ namespace Oversikt.IntegrationTests.Providers.Files
         [Test]
         public void Get_FileMissing_Throws()
         {
-            using (var file = new TempFileAdapter("a"))
+            using (var folder = new TempFolderAdapter(FileProvider.ArtifactsFolderName))
             {
-                folderLocation.Setup(c => c.Path).Returns(file.FolderPath);
+                SetupFolderPathConfig(folder.BasePath);
 
                 ActualValueDelegate targetAction = () => target.Get("a");
                 Assert.That(targetAction, Throws.TypeOf<FileNotFoundException>());
@@ -120,5 +127,80 @@ namespace Oversikt.IntegrationTests.Providers.Files
             }
         }
 
+        [Test]
+        public void GetAll_TwoFilesInArtifactsFolder_ReturnsTwoFiles()
+        {
+            using (var folder = new TempFolderAdapter(FileProvider.ArtifactsFolderName))
+            {
+                SetupFolderPathConfig(folder.BasePath);
+                folder.AddFile("abc", "def").AddFile("ghi","jkl");
+                bool firstFileWasFound=false, secondFileWasFound = false;
+                foreach (var file in target.GetAll())using(file)
+                {
+                    if (file.Id == Path.Combine(folder.Path, "abc")) firstFileWasFound = true;
+                    if (file.Id == Path.Combine(folder.Path, "ghi")) secondFileWasFound = true;
+                }
+                Assert.That(firstFileWasFound,Is.True);
+                Assert.That(secondFileWasFound,Is.True);
+            }
+        }
+
+        [Test]
+        public void GetAll_ArtifactsFolderMissing_FolderIsCreated()
+        {
+            using (var folder = new TempFolderAdapter())
+            {
+                SetupFolderPathConfig(folder.BasePath);
+
+                target.GetAll();
+
+                Assert.That(folder.SubFolderExists(FileProvider.ArtifactsFolderName));
+            }
+        }
+
+        [Test]
+        public void GetAll_FileOutsideArtifactsFolder_NotReturned()
+        {
+            using (var folder = new TempFolderAdapter())
+            {
+                folder.AddFolder(FileProvider.ArtifactsFolderName);
+                folder.AddFile("a", "b");
+                SetupFolderPathConfig(folder.BasePath);
+
+                var result = target.GetAll().ToList();
+
+                Assert.That(result,Is.Empty);
+            }
+        }
+
+        [Test]
+        public void GetAll_EmptySubFolder_DoesNotReturnFolder()
+        {
+           using(var folder=new TempFolderAdapter(FileProvider.ArtifactsFolderName))
+           {
+               SetupFolderPathConfig(folder.BasePath);
+               folder.AddFolder("subFolder");
+
+               var result = target.GetAll().ToList();
+
+               Assert.That(result, Is.Empty);
+           }
+        }
+
+        [Test]
+        public void GetAll_FilesInSubFolders_FilesAreReturned()
+        {
+            using (var folder = new TempFolderAdapter(FileProvider.ArtifactsFolderName))
+            {
+                SetupFolderPathConfig(folder.BasePath);
+                folder.AddFile("a", "b").AddFolder("subFolder").AddFile("c", "d").AddFolder("sub sub").AddFile("e", "f");
+                var result = 0;
+                foreach (var artifactStream in target.GetAll())using(artifactStream)
+                {
+                    result++;
+                }
+                Assert.That(result, Is.EqualTo(3));
+            }
+        }
     }
 }

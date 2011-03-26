@@ -4,30 +4,22 @@ using System.IO;
 
 namespace Oversikt.IntegrationTests.Providers.Files
 {
-    [DebuggerDisplay("{folder.FullName}")]
-    class TempFolderAdapter:IDisposable
+    [DebuggerDisplay("{Folder.FullName}")]
+    class TempFolderAdapter: FolderAdapter, IDisposable
     {
-        private readonly DirectoryInfo folder;
-
-        public TempFolderAdapter()
+        public TempFolderAdapter():base( Directory.CreateDirectory(string.Format("{0}\\{1}", System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName())))
         {
-            folder = Directory.CreateDirectory(string.Format("{0}\\{1}", System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName()));
         }
-        public string Path { get { return folder.FullName; } }
 
-        public string Name
+        public TempFolderAdapter(string folderName)
+            : base(Directory.CreateDirectory(string.Format("{0}\\{1}", System.IO.Path.GetTempPath(), System.IO.Path.GetRandomFileName())),folderName)
         {
-            get { return folder.Name; }
+            
         }
 
         public void Dispose()
         {
-            folder.Delete(true);
-        }
-
-        public bool SubFolderExists(string folderName)
-        {
-            return folder.GetDirectories(folderName).Length > 0;
+            Folder.Delete(true);
         }
     }
 }

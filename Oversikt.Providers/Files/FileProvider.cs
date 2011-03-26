@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using Skaar.Oversikt.Contracts;
+using Skaar.Oversikt.Contracts.Artifacts;
 using Skaar.Oversikt.Contracts.Configuration;
 
 namespace Oversikt.Providers.Files
@@ -40,6 +41,7 @@ namespace Oversikt.Providers.Files
             var folder = new DirectoryInfo(folderLocation.Path);
             if (!folder.Exists) throw new DirectoryNotFoundException("Project folder was not found. Please verify configuration settings.");
             var path = Path.Combine(folder.FullName, folderName);
+            Contract.Assume(!string.IsNullOrEmpty(path));
             var targetFolder = new DirectoryInfo(path);
             if (!targetFolder.Exists) targetFolder = Directory.CreateDirectory(path);
             return targetFolder;

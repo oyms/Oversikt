@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Skaar.Oversikt.Contracts
+namespace Skaar.Oversikt.Contracts.Artifacts
 {
     /// <summary>
     /// An artifact transported to and from a repository

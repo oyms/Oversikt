@@ -63,9 +63,17 @@
     <AssemblyOriginatorKeyFile>..\Oversikt.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Artifacts\Xml\Model\Artifact.cs" />
+    <Compile Include="Artifacts\Xml\ArtifactXmlSerializer.cs" />
+    <Compile Include="Artifacts\DeSerializationResult.cs" />
     <Compile Include="Files\ArtifactStream.cs" />
     <Compile Include="Files\FileProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Oversikt.Contracts\Oversikt.Contracts.csproj">
@@ -75,11 +83,21 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Oversikt.snk">
       <Link>Oversikt.snk</Link>
     </None>
+    <Resource Include="Artifacts\Xml\Artifact.xsd">
+      <SubType>Designer</SubType>
+    </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

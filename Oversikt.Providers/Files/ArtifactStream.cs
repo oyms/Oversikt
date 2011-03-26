@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Skaar.Oversikt.Contracts;
+using Skaar.Oversikt.Contracts.Artifacts;
 
 namespace Oversikt.Providers.Files
 {

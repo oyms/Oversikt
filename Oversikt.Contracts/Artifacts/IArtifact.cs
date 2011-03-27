@@ -7,10 +7,11 @@ namespace Skaar.Oversikt.Contracts.Artifacts
 	/// </summary>
 	public interface IArtifact
 	{
-		string Id {get;}
-		string Title {get;set;}
-		string Description {get;set;}
-		IList<IArtifactLink> Links {get;}
+	    string Title {get;set;}
+	    string Description {get;set;}
+        ArtifactType Type { get; set; }
+	    IList<IArtifactLink> Links {get;}
+	    string Id {get;}
 	}
 }
 

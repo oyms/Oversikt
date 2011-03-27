@@ -35,6 +35,7 @@ namespace Oversikt.Providers.Files
         }
         private DirectoryInfo EnsureFolder(string folderName)
         {
+            Contract.Requires(folderName!=null);
             IFolderLocation folderLocation = Folder;
             if (folderLocation == null || string.IsNullOrWhiteSpace(folderLocation.Path))
                 throw new InvalidOperationException("The file location configuration is not specified");

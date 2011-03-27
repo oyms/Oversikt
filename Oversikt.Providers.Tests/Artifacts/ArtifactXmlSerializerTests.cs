@@ -1,6 +1,9 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Schema;
 using Moq;
 using NUnit.Framework;
 using Oversikt.Providers.Artifacts.Xml;
@@ -13,11 +16,32 @@ namespace Oversikt.Tests.Artifacts
     {
         private ArtifactXmlSerializer target;
         private Mock<IArtifactStream> inputMock;
+        private Stream stream; 
         [SetUp]
         public void SetUp()
         {
             target=new ArtifactXmlSerializer();
             inputMock=new Mock<IArtifactStream>();
+            inputMock.Setup(i => i.Id).Returns(Any.String);
+        }
+        [TearDown]
+        public void TearDown()
+        {
+            if(stream!=null)
+            {
+                stream.Close();
+                stream = null;
+            }
+        }
+
+        private void SetupSimpleArtifactStream()
+        {
+            SetupStream(Resources.SimpleArtifactAsXml);
+        }
+        private void SetupStream(string content)
+        {
+            stream = new MemoryStream(Encoding.Default.GetBytes(content));
+            inputMock.Setup(i => i.Stream).Returns(stream);
         }
         [Test]
         public void Deserialize_InputIsNull_Throws()
@@ -33,10 +57,7 @@ namespace Oversikt.Tests.Artifacts
         public void Deserialize_ValidXml_ReturnsArtifact()
         {
             //Arrange
-            var stream = new MemoryStream(Encoding.Default.GetBytes(Resources.SimpleArtifactAsXml));
-            
-            inputMock.Setup(i => i.Stream).Returns(stream);
-            inputMock.Setup(i => i.Id).Returns(Any.String);
+            SetupSimpleArtifactStream();
             
             //Act
             var result=target.Deserialize(inputMock.Object);
@@ -45,6 +66,29 @@ namespace Oversikt.Tests.Artifacts
             Assert.That(result,Is.Not.Null);
             Assert.That(result.Result,Is.Not.Null);
         }
-        
+        [Test]
+        public void Deserialize_ValidXml_TitleIsPreserved()
+        {
+            //Arrange
+            const string expected = "Oversikt task management"; //As in resource xml file
+            SetupSimpleArtifactStream();
+
+            //Act
+            var result = target.Deserialize(inputMock.Object).Result;
+
+            //Assert
+            Assert.That(result.Title, Is.EqualTo(expected));
+        }
+
+        [Test]
+        public void Deserialize_InvalidXml_ThrowsValidationException()
+        {
+            //Arrange
+            string input = new XElement("root", new XElement("subElement", Any.String)).ToString(SaveOptions.OmitDuplicateNamespaces);
+            SetupStream(input);
+            
+            //Assert
+            Assert.That(()=>target.Deserialize(inputMock.Object),Throws.TypeOf<XmlSchemaValidationException>());
+        }
     }
 }

@@ -93,8 +93,11 @@
     </MonoDevelop>
   </ProjectExtensions>
   <ItemGroup>
+    <Compile Include="Artifacts\ArtifactType.cs" />
     <Compile Include="Artifacts\IArtifactSerializer.cs" />
     <Compile Include="Artifacts\IDeserializationResult.cs" />
+    <Compile Include="Artifacts\LinkDirection.cs" />
+    <Compile Include="Artifacts\LinkType.cs" />
     <Compile Include="Configuration\ConfigurationType.cs" />
     <Compile Include="Configuration\IConfigurationDefinition.cs" />
     <Compile Include="Configuration\ConfigurationScope.cs" />

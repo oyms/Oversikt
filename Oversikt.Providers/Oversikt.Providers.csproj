@@ -66,6 +66,7 @@
     <Compile Include="Artifacts\Xml\Model\Artifact.cs" />
     <Compile Include="Artifacts\Xml\ArtifactXmlSerializer.cs" />
     <Compile Include="Artifacts\DeSerializationResult.cs" />
+    <Compile Include="Artifacts\Xml\Model\ArtifactLink.cs" />
     <Compile Include="Files\ArtifactStream.cs" />
     <Compile Include="Files\FileProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -83,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
